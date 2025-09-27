@@ -1,10 +1,8 @@
 <?php
 
-namespace Cavatappi\Foundation\Value\Jobs;
+namespace Cavatappi\Foundation\Job;
 
 use Cavatappi\Foundation\Value;
-use Cavatappi\Foundation\Value\Traits\SerializableSupertypeKit;
-use Cavatappi\Foundation\Value\Traits\SerializableValue;
 
 /**
  * A Job represents a task that should be performed asynchronously.
@@ -15,31 +13,25 @@ use Cavatappi\Foundation\Value\Traits\SerializableValue;
  * Extend this class and add any needed information. Jobs will likely be serialized to facilitate cross-thread or
  * cross-server communication.
  */
-readonly abstract class Job extends Value implements SerializableValue {
-	use SerializableSupertypeKit;
+interface Job extends Value {
+	/**
+	 * Service to instantiate.
+	 *
+	 * @var class-string $service
+	 */
+	public string $service { get; }
 
 	/**
-	 * Construct the job.
+	 * Method on $service to call.
 	 *
-	 * @param class-string $service Service to instantiate.
-	 * @param string       $method  Method on $service to call.
+	 * @var string
 	 */
-	public function __construct(
-		public string $service,
-		public string $method,
-	) {
-	}
+	public string $method { get; }
 
 	/**
 	 * Get the parameters to be passed to $service->$method.
 	 *
-	 * Default implementation is any properties on the object excluding $service and $method.
-	 *
 	 * @return array
 	 */
-	public function getParameters(): array {
-		$base = \get_object_vars($this);
-		unset($base['service'], $base['method']);
-		return $base;
-	}
+	public function getParameters(): array;
 }

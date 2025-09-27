@@ -22,7 +22,7 @@ class UuidFactory {
 	 *
 	 * @var RamseyUuidFactory
 	 */
-	private static RamseyUuidFactory $internal;
+	private static ?RamseyUuidFactory $internal;
 
 	private static function factory(): RamseyUuidFactory {
 		self::$internal ??= new RamseyUuidFactory();
@@ -32,10 +32,10 @@ class UuidFactory {
 	/**
 	 * Replace the instance of UuidFactory.
 	 *
-	 * @param  RamseyUuidFactory $newSource Ramsey\Uuid-compatible factory.
+	 * @param  RamseyUuidFactory|null $newSource Ramsey\Uuid-compatible factory. Pass null to reset to default.
 	 * @return void
 	 */
-	public static function setSource(RamseyUuidFactory $newSource) {
+	public static function setSource(?RamseyUuidFactory $newSource) {
 		self::$internal = $newSource;
 	}
 
@@ -97,5 +97,14 @@ class UuidFactory {
 	 */
 	public static function fromByteString(string $serialized): UuidInterface {
 		return self::factory()->fromBytes($serialized);
+	}
+
+	/**
+	 * Returns a nil UUID (00000000-0000-0000-0000-000000000000)
+	 *
+	 * @return UuidInterface
+	 */
+	public static function nil(): UuidInterface {
+		return self::factory()->fromString(Uuid::NIL);
 	}
 }

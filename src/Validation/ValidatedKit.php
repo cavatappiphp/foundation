@@ -6,6 +6,12 @@ use Cavatappi\Foundation\Exceptions\InvalidValueProperties;
 use ReflectionAttribute;
 use ReflectionClass;
 
+/**
+ * Add some standard validation based on attributes.
+ *
+ * TODO: Make this extendable. This ties into a whole story of "how do we enable customization (and therefore
+ * dependencies) in the largely static Value ecosystem?"
+ */
 trait ValidatedKit {
 	/**
 	 * Validate the object and throw an exception if conditions are not met.
@@ -35,13 +41,14 @@ trait ValidatedKit {
 			}
 		}
 
-		$maybeOnlyOne = $classReflection->getAttributes(OnlyOneOf::class, ReflectionAttribute::IS_INSTANCEOF);
-		if (!empty($maybeOnlyOne)) {
-			$onlyOne = $maybeOnlyOne[0]->newInstance();
+		$maybeExactlyOne = $classReflection->getAttributes(ExactlyOneOf::class, ReflectionAttribute::IS_INSTANCEOF);
+		if (!empty($maybeExactlyOne)) {
+			$exactlyOne = $maybeExactlyOne[0]->newInstance();
 			// Using strict comparision instead of isset() in case $prop is virtual.
-			if (\array_filter($onlyOne->properties, fn($prop) => $this->$prop !== null)) {
+			$present = \array_filter($exactlyOne->properties, fn($prop) => $this->$prop !== null);
+			if (\count($present) !== 1) {
 				throw new InvalidValueProperties(
-					'Only one of these properties must be set: ' . \implode(',', $onlyOne->properties)
+					'Exactly one of these properties must be set: ' . \implode(', ', $exactlyOne->properties)
 				);
 			}
 		}

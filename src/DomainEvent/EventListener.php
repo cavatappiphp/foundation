@@ -1,6 +1,6 @@
 <?php
 
-namespace Cavatappi\Foundation\Service\Event;
+namespace Cavatappi\Foundation\DomainEvent;
 
 use Attribute;
 use Crell\Tukio\ListenerPriority;
@@ -12,6 +12,8 @@ use Crell\Tukio\ListenerPriority;
  * to respond to.
  *
  * If the listener should respond to new and replayed events, use ProjectionListener instead.
+ *
+ * @codeCoverageIgnore
  */
 #[Attribute(Attribute::TARGET_FUNCTION | Attribute::TARGET_METHOD)]
 class EventListener extends ListenerPriority {
